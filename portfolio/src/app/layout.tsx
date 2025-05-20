@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex justify-between items-center px-8 py-4">
+        <div className="fixed top-0 left-0 w-full flex justify-between items-center px-8 py-4">
           <Link className="text-lg" href="/">VIVIAN ZHOU</Link>
           <NavigationBar />
         </div>
