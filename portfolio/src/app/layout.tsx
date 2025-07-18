@@ -3,7 +3,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { NavigationBar } from "./components/NavigationBar";
 import Link from "next/link";
-import ViewCanvas from "./components/ViewCanvas";
+import Preloader from "./components/Preloader";
+
 
 //const geistSans = Geist({
 //  variable: "--font-geist-sans",
@@ -36,13 +37,15 @@ export default function RootLayout({
       <body
         className={`${poppins.className} antialiased`}
       >
-        <div className="fixed top-0 left-0 w-full flex justify-between items-center px-8 py-4">
-          <Link className="text-lg" href="/">VIVIAN ZHOU</Link>
-          <NavigationBar />
-        </div>
+        <Preloader />
         
-        {children}
-        <ViewCanvas />
+          <div className="fixed top-0 left-0 w-full flex justify-between items-center px-8 py-4">
+            <Link className="text-lg" href="/">VIVIAN ZHOU</Link>
+            <NavigationBar />
+          </div>
+          
+          {children}
+        
       </body>
     </html>
   );
