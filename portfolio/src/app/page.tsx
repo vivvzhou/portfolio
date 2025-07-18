@@ -7,8 +7,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ViewCanvas from "./components/ViewCanvas";
 import Loader from "./components/Loader"
 import { useState, useEffect } from "react";
-import About from "../about/page";
+import About from "./about/page";
 import { motion } from 'framer-motion'
+
+import FadeInComponent from "./components/FadeIn";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -27,10 +29,19 @@ export default function Home() {
 
   return (
     <div className="container mx-auto max-w-7xl  justify-center items-center">
-      <Loader isLoaded={isLoaded} />
-        <ViewCanvas />
-        <About />
-      
+      <Loader isLoaded={isLoaded}/>
+        {isLoaded && (
+          <>
+            <FadeInComponent>
+              <ViewCanvas />
+              <About />
+            </FadeInComponent>
+          </>
+          
+            
+          
+        )}
+        
     </div>
   );
 }

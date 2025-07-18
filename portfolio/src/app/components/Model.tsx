@@ -30,14 +30,14 @@ export default function Model(props) {
 
 
     return (
-        <group {...props} dispose={null}  maxHeight={viewport.width < 3 ? 1 : 12.5} position={viewport.width < 3 ? [0,-.4,0] : [0,-.2,0]}>
-            <Text  font={'/fonts/NeueMontreal-Bold.otf'} position={[0,3,0]} fontSize={viewport.width < 3 ? 1 : 1.5} color="white" anchorX="center" anchorY="middle">
+        <group {...props} dispose={null}  maxHeight={viewport.width < 4 ? 1 : 12.5} position={viewport.width < 4 ? [0,-.4,0] : [0,-.2,0]}>
+            <Text  font={'/fonts/NeueMontreal-Bold.otf'} position={[0,3,0]} fontSize={viewport.width < 4 ? 1 : 1.5} color="white" anchorX="center" anchorY="middle">
                 hi! i'm vivian
             </Text>
-            <Text font={'/fonts/NeueMontreal-Medium.otf'} position={[0,1.7,0]} maxWidth={viewport.width < 3 ? 6 : 12.5} fontSize={viewport.width < 3 ? .25 : .3} color="white" anchorX="center" anchorY="middle">
-                second year at Georgia Tech interested in AI, computer graphics, design, and building cool things.
+            <Text font={'/fonts/NeueMontreal-Medium.otf'} position={[.2,1.7,0]} maxWidth={viewport.width < 4 ? 6 : 13.5} fontSize={viewport.width < 4 ? .25 : .3} color="white" anchorX="center" anchorY="middle">
+                rising second year at Georgia Tech interested in AI, computer graphics, design, and building cool things.
             </Text>
-            <group ref={groupRef}  scale={viewport.width < 3 ? 1 : 1.7} position={viewport.width < 3 ? [0,-.7,0] : [0,-2,0]}>
+            <group ref={groupRef}  scale={viewport.width < 4 ? 1 : 1.7} position={viewport.width < 4 ? [0,-.7,0] : [0,-2,0]}>
                 <mesh
                     geometry={(nodes.petal1 as THREE.Mesh).geometry}
                     rotation={[-0.092, -0.064, -0.06]}
