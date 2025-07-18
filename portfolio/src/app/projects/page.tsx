@@ -10,11 +10,11 @@ const Projects = () => {
   const y = useMotionValue(0);
   const springX = useSpring(x, { damping: 10, stiffness: 50 });
   const springY = useSpring(y, { damping: 10, stiffness: 50 });
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: { clientX: number; clientY: number; }) => {
     x.set(e.clientX + 20);
     y.set(e.clientY + 20);
   };
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState<string | null>(null);
   return (
     <FadeInComponent>
                 

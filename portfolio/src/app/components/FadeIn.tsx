@@ -1,8 +1,14 @@
 "use client"
 
 import { motion } from "framer-motion";
+import { ReactNode } from "react";
 
-export default function FadeInComponent({ children, delay = 0 }) {
+type FadeInComponentProps = {
+  children: ReactNode;
+  delay?: number;
+};
+
+export default function FadeInComponent({ children, delay = 0 }: FadeInComponentProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

@@ -1,12 +1,11 @@
 "use client";
 import { Suspense } from "react";
-import React, { useEffect } from "react";
-import { Canvas, useThree } from "@react-three/fiber"
-import { Environment, PerspectiveCamera } from "@react-three/drei";
+import React from "react";
+import { Canvas } from "@react-three/fiber"
+import { Environment } from "@react-three/drei";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { Viewport } from "next";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 

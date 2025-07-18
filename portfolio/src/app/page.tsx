@@ -8,7 +8,6 @@ import ViewCanvas from "./components/ViewCanvas";
 import Loader from "./components/Loader"
 import { useState, useEffect } from "react";
 import About from "./about/page";
-import { motion } from 'framer-motion'
 
 import FadeInComponent from "./components/FadeIn";
 

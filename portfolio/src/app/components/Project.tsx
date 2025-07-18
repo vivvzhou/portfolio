@@ -1,6 +1,21 @@
 import React, { useState } from "react";
 import ProjectDetails from "./ProjectDetails";
-import Image from "next/image";
+
+type Tag = {
+  id: number;
+  name: string;
+  path?: string;
+};
+
+type ProjectProps = {
+    title: string;
+  description: string;
+  subDescription: string[];
+  href: string;
+  image?: string;
+  tags: Tag[]
+  setPreview: (img: string | null) => void;
+};
 
 const Project = ({
   title,
@@ -9,14 +24,15 @@ const Project = ({
   href,
   image,
   tags,
-  setPreview,
-}) => {
+  setPreview
+  // ...
+}: ProjectProps) => {
   const [isHidden, setIsHidden] = useState(false);
   return (
     <>
       <div
         className="flex-wrap items-center justify-between py-10 space-y-14 sm:flex sm:space-y-0"
-        onMouseEnter={() => setPreview(image)}
+        onMouseEnter={() => setPreview(image ?? null)}
         onMouseLeave={() => setPreview(null)}
       >
         <div>
@@ -40,8 +56,7 @@ const Project = ({
           title={title}
           description={description}
           subDescription={subDescription}
-          image={image}
-          tags={tags}
+          image={image ?? ""}
           href={href}
           closeModal={() => setIsHidden(false)}
         />

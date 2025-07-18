@@ -20,10 +20,10 @@ export default function Home() {
                         alt="coding pov"
                     />
                     <div className="z-10">
-                        <p className="headtext">hi, i'm vivian zhou</p>
+                        <p className="headtext">hi, i&apos;m vivian zhou</p>
                         <p className="subtext">
-                            i'm a rising second year computer science student at georgia tech. this past year, i've not only developed my 
-                            frontend and backend dev skills, but i've also practiced being creative in a world where technology drives innovation.
+                            i&apos;m a rising second year computer science student at georgia tech. this past year, i&apos;ve not only developed my 
+                            frontend and backend dev skills, but i&apos;ve also practiced being creative in a world where technology drives innovation.
                         </p>
                     </div>
                     <div className="absolute inset-x-0 pointer-evets-none -bottom-4 h-1/2 sm:h-1/3 bg-gradient-to-t from-pink" />
@@ -51,11 +51,11 @@ export default function Home() {
                     <div className="z-10 w-[50%]">
                         <p className="headtext">time zone</p>
                         <p className="subtext">
-                        i'm based in Atlanta, GA, and open to remote work worldwide
+                        i&apos;m based in Atlanta, GA, and open to remote work worldwide
                         </p>
                     </div>
                     <figure className="absolute left-[30%] top-[10%]">
-                        <Globe />
+                        <Globe className=""/>
                     </figure>
                 </div>
             </div>

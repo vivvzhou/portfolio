@@ -7,7 +7,7 @@ import { useControls } from 'leva'
 
 
 
-export default function Model(props) {
+export default function Model(props: any) {
     const groupRef = useRef<THREE.Group>(null);
     const { nodes } = useGLTF('/flower.glb');
     const { viewport } = useThree();
@@ -32,7 +32,7 @@ export default function Model(props) {
     return (
         <group {...props} dispose={null}  maxHeight={viewport.width < 4 ? 1 : 12.5} position={viewport.width < 4 ? [0,-.4,0] : [0,-.2,0]}>
             <Text  font={'/fonts/NeueMontreal-Bold.otf'} position={[0,3,0]} fontSize={viewport.width < 4 ? 1 : 1.5} color="white" anchorX="center" anchorY="middle">
-                hi! i'm vivian
+                hi! i&apos;m vivian
             </Text>
             <Text font={'/fonts/NeueMontreal-Medium.otf'} position={[.2,1.7,0]} maxWidth={viewport.width < 4 ? 6 : 13.5} fontSize={viewport.width < 4 ? .25 : .3} color="white" anchorX="center" anchorY="middle">
                 rising second year at Georgia Tech interested in AI, computer graphics, design, and building cool things.

@@ -1,14 +1,23 @@
 import { motion } from "motion/react";
 import Image from "next/image";
-const ProjectDetails = ({
-  title,
+import { JSXElementConstructor, Key, MouseEventHandler, ReactElement, ReactNode, ReactPortal } from "react";
+type ProjectDetails = ({
+  title: string,
+  description: string,
+  subDescription: any,
+  image: string,
+  href: string,
+  closeModal:MouseEventHandler<HTMLButtonElement>,
+})
+const ProjectDetails = ( {
+    title,
   description,
   subDescription,
   image,
-  tags,
   href,
   closeModal,
-}) => {
+  // ...
+}: ProjectDetails) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full overflow-hidden backdrop-blur-sm">
       <motion.div
@@ -26,7 +35,7 @@ const ProjectDetails = ({
         <div className="p-5">
           <h5 className="mb-2 text-2xl font-bold text-white">{title}</h5>
           <p className="mb-3 font-normal text-neutral-400">{description}</p>
-          {subDescription.map((subDesc, index) => (
+          {subDescription.map((subDesc: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, index: Key | null | undefined) => (
             <p key={index} className="mb-3 font-normal text-neutral-400">{subDesc}</p>
           ))}
           <div className="flex items-center justify-between mt-4">
