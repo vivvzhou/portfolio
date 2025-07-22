@@ -5,6 +5,7 @@ import { NavigationBar } from "./components/NavigationBar";
 import Link from "next/link";
 import Preloader from "./components/Preloader";
 import Footer from "./components/Footer";
+import { Analytics } from "@vercel/analytics/react";
 
 //const geistSans = Geist({
 //  variable: "--font-geist-sans",
@@ -44,7 +45,7 @@ export default function RootLayout({
         </div>
         {children}
         <Footer />
-          
+        <Analytics />
           
           
       </body>
