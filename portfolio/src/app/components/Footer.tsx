@@ -1,22 +1,20 @@
-import { mySocials } from "../constants";
-import Image from "next/image";
-const Footer = () => {
-  return (
-    <section className="flex flex-wrap items-center justify-between gap-5 pb-3 text-sm text-neutral-400 c-space">
-      <div className="mb-4 bg-gradient-to-r from-transparent via-neutral-700 to-transparent h-[1px] w-full" />
-      <div className="flex gap-2">
-        <p>Vivian Zhou</p>
-      </div>
-      <div className="flex gap-3">
-        {mySocials.map((social, index) => (
-          <a href={social.href} key={index}>
-            <Image src={social.icon} className="w-5 h-5" alt={social.name} width={10} height={10}/>
-          </a>
-        ))}
-      </div>
-      <p>© 2025. All rights reserved.</p>
-    </section>
-  );
-};
+import { site, socialLinks } from "@/data/portfolio";
+import Reveal from "./Reveal";
 
-export default Footer;
+export default function Footer() {
+  return (
+    <footer className="site-footer">
+      <Reveal className="page-shell site-footer__inner">
+        <p>© {new Date().getFullYear()} Vivian Zhou</p>
+        <p>{site.location}</p>
+        <div className="footer-links">
+          {socialLinks.map((social) => (
+            <a key={social.label} href={social.href} target="_blank" rel="noreferrer">
+              {social.label} <span aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      </Reveal>
+    </footer>
+  );
+}
