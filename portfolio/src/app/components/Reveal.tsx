@@ -45,7 +45,7 @@ export default function Reveal({
       className={className}
       initial={prefersReducedMotion ? false : hidden}
       animate={prefersReducedMotion ? undefined : introReady && isInView ? visible : hidden}
-      transition={{ duration: 1.4, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 1.8, delay, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>

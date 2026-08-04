@@ -12,8 +12,9 @@ export function NavigationBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const prefersReducedMotion = useReducedMotion();
-  const { introReady } = usePortfolioIntro();
+  const { introReady, skipIntro } = usePortfolioIntro();
   const showIntro = prefersReducedMotion || introReady;
+  const animateIntro = !prefersReducedMotion && !skipIntro;
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -34,9 +35,9 @@ export function NavigationBar() {
   return (
     <motion.header
       className="site-header"
-      initial={prefersReducedMotion ? false : { opacity: 0, y: -14 }}
+      initial={animateIntro ? { opacity: 0, y: -14 } : false}
       animate={prefersReducedMotion ? undefined : showIntro ? { opacity: 1, y: 0 } : { opacity: 0, y: -14 }}
-      transition={{ duration: 1.6, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+      transition={animateIntro ? { duration: 1.6, delay: 0.32, ease: [0.16, 1, 0.3, 1] } : { duration: 0 }}
     >
       <div className="page-shell site-header__inner">
         <Link href="/" className="wordmark" aria-label="Vivian Zhou home">

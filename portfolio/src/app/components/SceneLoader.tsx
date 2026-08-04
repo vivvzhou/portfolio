@@ -12,7 +12,7 @@ export default function SceneLoader() {
   const [webglFailed, setWebglFailed] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
   const prefersReducedMotion = useReducedMotion() ?? false;
-  const { markSceneReady } = usePortfolioIntro();
+  const { markSceneReady, skipIntro } = usePortfolioIntro();
 
   const handleReady = useCallback(() => {
     setCanvasReady(true);
@@ -37,7 +37,11 @@ export default function SceneLoader() {
     return () => window.clearTimeout(timer);
   }, [canvasReady, prefersReducedMotion]);
 
-  const phase = webglFailed ? "fallback" : !canvasReady ? "loading" : showLoader ? "handoff" : "ready";
+  useEffect(() => {
+    if (skipIntro) setShowLoader(false);
+  }, [skipIntro]);
+
+  const phase = webglFailed ? "fallback" : !canvasReady ? "loading" : showLoader && !skipIntro ? "handoff" : "ready";
 
   return (
     <div

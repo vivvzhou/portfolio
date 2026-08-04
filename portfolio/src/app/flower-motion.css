@@ -136,10 +136,16 @@
 }
 
 .section--work--orbit {
-  min-height: 500svh;
+  min-height: 650svh;
   padding: 0;
   overflow: clip;
   background: transparent;
+}
+
+@media (min-width: 768px) {
+  .hero {
+    min-height: max(48rem, 112svh);
+  }
 }
 
 .work-orbit__stage {

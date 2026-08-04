@@ -5,6 +5,7 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useM
 
 type PortfolioIntroContextValue = {
   introReady: boolean;
+  skipIntro: boolean;
   markSceneReady: () => void;
 };
 
@@ -13,13 +14,61 @@ const PortfolioIntroContext = createContext<PortfolioIntroContextValue | null>(n
 export function PortfolioIntroProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [introReady, setIntroReady] = useState(pathname !== "/");
+  const [skipIntro, setSkipIntro] = useState(pathname !== "/");
 
   useEffect(() => {
-    setIntroReady(pathname !== "/");
+    const isHome = pathname === "/";
+    let firstFrame = 0;
+    let secondFrame = 0;
+    let delayedCheck = 0;
+
+    const checkInitialScrollPosition = () => {
+      if (!isHome) {
+        setSkipIntro(true);
+        setIntroReady(true);
+        return;
+      }
+
+      // Browsers restore scroll after hydration on reloads and deep links. Do
+      // not play the hero handoff first, then animate it away to catch up.
+      if (window.scrollY > Math.max(12, window.innerHeight * 0.02)) {
+        setSkipIntro(true);
+        setIntroReady(true);
+      }
+    };
+
+    if (!isHome) {
+      checkInitialScrollPosition();
+      return;
+    }
+
+    setSkipIntro(false);
+    setIntroReady(false);
+
+    const schedulePositionCheck = () => {
+      checkInitialScrollPosition();
+      firstFrame = window.requestAnimationFrame(() => {
+        checkInitialScrollPosition();
+        secondFrame = window.requestAnimationFrame(checkInitialScrollPosition);
+      });
+    };
+
+    schedulePositionCheck();
+    delayedCheck = window.setTimeout(checkInitialScrollPosition, 180);
+    window.addEventListener("pageshow", schedulePositionCheck);
+    window.addEventListener("load", schedulePositionCheck);
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      window.clearTimeout(delayedCheck);
+      window.removeEventListener("pageshow", schedulePositionCheck);
+      window.removeEventListener("load", schedulePositionCheck);
+    };
   }, [pathname]);
 
   const markSceneReady = useCallback(() => setIntroReady(true), []);
-  const value = useMemo(() => ({ introReady, markSceneReady }), [introReady, markSceneReady]);
+  const value = useMemo(() => ({ introReady, skipIntro, markSceneReady }), [introReady, skipIntro, markSceneReady]);
 
   return <PortfolioIntroContext.Provider value={value}>{children}</PortfolioIntroContext.Provider>;
 }

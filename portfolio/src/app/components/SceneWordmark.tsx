@@ -10,12 +10,14 @@ import type { FlowerMotion } from "./Model";
 type SceneWordmarkProps = {
   motion: MutableRefObject<FlowerMotion>;
   reducedMotion: boolean;
+  skipIntro: boolean;
 };
 
-export default function SceneWordmark({ motion, reducedMotion }: SceneWordmarkProps) {
+export default function SceneWordmark({ motion, reducedMotion, skipIntro }: SceneWordmarkProps) {
   const vivianGroupRef = useRef<THREE.Group>(null);
   const projectsGroupRef = useRef<THREE.Group>(null);
   const handoffProgressRef = useRef(0);
+  const hasSyncedInitialState = useRef(false);
   const { viewport } = useThree();
   const fontSize = Math.min(viewport.width * 0.145, 1.42);
   const projectsFontSize = Math.min(viewport.width * 0.17, 1.56);
@@ -24,10 +26,11 @@ export default function SceneWordmark({ motion, reducedMotion }: SceneWordmarkPr
 
   useFrame((_, delta) => {
     const targetProgress = THREE.MathUtils.clamp((motion.current.scrollProgress - 0.22) / 0.28, 0, 1);
-    const transition = reducedMotion
+    const transition = reducedMotion || skipIntro || !hasSyncedInitialState.current
       ? targetProgress
       : THREE.MathUtils.damp(handoffProgressRef.current, targetProgress, 6.2, delta);
     handoffProgressRef.current = transition;
+    hasSyncedInitialState.current = true;
 
     if (vivianGroupRef.current) {
       vivianGroupRef.current.position.x = -wordmarkOffset * transition;

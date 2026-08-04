@@ -18,6 +18,7 @@ type ModelProps = {
   motion: MutableRefObject<FlowerMotion>;
   reducedMotion?: boolean;
   introReady?: boolean;
+  skipIntro?: boolean;
   onReady?: () => void;
 };
 
@@ -47,7 +48,7 @@ const petals: Petal[] = [
   { node: "petal16", position: [-0.158, 0.006, -0.127], rotation: [2.727, 1.107, -2.886], scale: 1.23 },
 ];
 
-export default function Model({ scale, material, motion, reducedMotion = false, introReady = true, onReady }: ModelProps) {
+export default function Model({ scale, material, motion, reducedMotion = false, introReady = true, skipIntro = false, onReady }: ModelProps) {
   const sceneGroupRef = useRef<THREE.Group>(null);
   const groupRef = useRef<THREE.Group>(null);
   const glassMaterialRef = useRef<{ opacity: number } | null>(null);
@@ -84,7 +85,7 @@ export default function Model({ scale, material, motion, reducedMotion = false, 
 
   useFrame(({ clock }, delta) => {
     let revealProgress = 0;
-    if (reducedMotion) {
+    if (reducedMotion || skipIntro) {
       revealProgress = 1;
     } else if (introReady) {
       if (introStartedAt.current === null) introStartedAt.current = clock.elapsedTime;

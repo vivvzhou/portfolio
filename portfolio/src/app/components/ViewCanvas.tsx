@@ -16,6 +16,8 @@ import SceneWordmark from "./SceneWordmark";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const SCROLL_SCRUB = 1.8;
+
 type ViewCanvasProps = {
   onContextLost: () => void;
   onReady: () => void;
@@ -74,7 +76,7 @@ export default function ViewCanvas({ onContextLost, onReady }: ViewCanvasProps) 
   });
   const prefersReducedMotion = useReducedMotion() ?? false;
   const { material } = useFlowerMaterial();
-  const { introReady } = usePortfolioIntro();
+  const { introReady, skipIntro } = usePortfolioIntro();
   const [hasMounted, setHasMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [isLargeDesktop, setIsLargeDesktop] = useState(false);
@@ -102,6 +104,82 @@ export default function ViewCanvas({ onContextLost, onReady }: ViewCanvasProps) 
   useEffect(() => () => removeContextListener.current?.(), []);
 
   useEffect(() => {
+    let firstFrame = 0;
+    let secondFrame = 0;
+    let delayedSync = 0;
+    let scrollFrame = 0;
+
+    const syncScrollProgress = () => {
+      const hero = document.querySelector<HTMLElement>("[data-hero]");
+      const work = document.getElementById("work");
+      const experience = document.getElementById("experience");
+      if (!hero || !work || !experience) return;
+
+      const scrollY = window.scrollY;
+      const heroProgress = THREE.MathUtils.clamp(
+        (scrollY - hero.offsetTop) / Math.max(hero.offsetHeight, 1),
+        0,
+        1,
+      );
+      const workProgress = THREE.MathUtils.clamp(
+        (scrollY - work.offsetTop) / Math.max(work.offsetHeight - window.innerHeight, 1),
+        0,
+        1,
+      );
+
+      flowerMotion.current.scrollProgress = scrollY < work.offsetTop
+        ? heroProgress * 0.7
+        : 0.7 + workProgress * 3.2;
+
+      const exitStart = experience.offsetTop - window.innerHeight;
+      const exitEnd = experience.offsetTop - window.innerHeight * 0.3;
+      const exitProgress = THREE.MathUtils.clamp(
+        (scrollY - exitStart) / Math.max(exitEnd - exitStart, 1),
+        0,
+        1,
+      );
+
+      if (sceneRef.current) {
+        gsap.set(sceneRef.current, {
+          yPercent: -2 - exitProgress * 106,
+          opacity: 1 - exitProgress,
+        });
+      }
+    };
+
+    const scheduleSync = () => {
+      syncScrollProgress();
+      firstFrame = window.requestAnimationFrame(() => {
+        syncScrollProgress();
+        secondFrame = window.requestAnimationFrame(syncScrollProgress);
+      });
+    };
+
+    scheduleSync();
+    delayedSync = window.setTimeout(syncScrollProgress, 180);
+    const handleScroll = () => {
+      if (scrollFrame) return;
+      scrollFrame = window.requestAnimationFrame(() => {
+        scrollFrame = 0;
+        syncScrollProgress();
+      });
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("pageshow", scheduleSync);
+    window.addEventListener("load", scheduleSync);
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      window.cancelAnimationFrame(scrollFrame);
+      window.clearTimeout(delayedSync);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("pageshow", scheduleSync);
+      window.removeEventListener("load", scheduleSync);
+    };
+  }, []);
+
+  useEffect(() => {
     const updateVisibility = () => setIsPageVisible(!document.hidden);
     updateVisibility();
     document.addEventListener("visibilitychange", updateVisibility);
@@ -111,24 +189,46 @@ export default function ViewCanvas({ onContextLost, onReady }: ViewCanvasProps) 
   useEffect(() => {
     const hero = document.querySelector<HTMLElement>("[data-hero]");
     const work = document.getElementById("work");
-    const targets = [hero, work].filter((target): target is HTMLElement => Boolean(target));
-    if (!targets.length) return;
+    if (!hero || !work) return;
 
-    const visibleTargets = new Set<Element>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) visibleTargets.add(entry.target);
-          else visibleTargets.delete(entry.target);
-        });
-        setIsSceneRelevant(visibleTargets.size > 0);
-      },
-      { rootMargin: "100% 0px 70% 0px" },
-    );
+    let frame = 0;
+    const updateSceneRelevance = () => {
+      const sceneStart = Math.max(0, hero.offsetTop - window.innerHeight);
+      const sceneEnd = work.offsetTop + work.offsetHeight + window.innerHeight;
+      const scrollY = window.scrollY;
+      setIsSceneRelevant(scrollY >= sceneStart && scrollY <= sceneEnd);
+    };
+    const scheduleSceneRelevance = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        updateSceneRelevance();
+      });
+    };
 
-    targets.forEach((target) => observer.observe(target));
-    return () => observer.disconnect();
+    updateSceneRelevance();
+    window.addEventListener("scroll", scheduleSceneRelevance, { passive: true });
+    window.addEventListener("resize", scheduleSceneRelevance);
+    window.addEventListener("pageshow", scheduleSceneRelevance);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleSceneRelevance);
+      window.removeEventListener("resize", scheduleSceneRelevance);
+      window.removeEventListener("pageshow", scheduleSceneRelevance);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!isSceneRelevant || !isDesktop) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      ScrollTrigger.update();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [isDesktop, isSceneRelevant]);
 
   const handleCanvasCreated = useCallback((state: { gl: THREE.WebGLRenderer; scene: THREE.Scene }) => {
     const { gl, scene } = state;
@@ -191,7 +291,7 @@ export default function ViewCanvas({ onContextLost, onReady }: ViewCanvasProps) 
             trigger: work,
             start: "top 88%",
             end: "top 18%",
-            scrub: 1,
+            scrub: SCROLL_SCRUB,
           },
         },
       );
@@ -201,7 +301,7 @@ export default function ViewCanvas({ onContextLost, onReady }: ViewCanvasProps) 
           trigger: hero,
           start: "top top",
           end: "bottom top",
-          scrub: true,
+          scrub: SCROLL_SCRUB,
           onUpdate: (trigger) => {
             flowerMotion.current.scrollProgress = trigger.progress * 0.7;
           },
@@ -264,12 +364,40 @@ export default function ViewCanvas({ onContextLost, onReady }: ViewCanvasProps) 
             trigger: experience,
             start: "top bottom",
             end: "top 30%",
-            scrub: true,
+            scrub: SCROLL_SCRUB,
           },
         },
       );
+
+      let firstFrame = 0;
+      let secondFrame = 0;
+      let delayedRefresh = 0;
+      const refreshScrollState = () => {
+        ScrollTrigger.refresh();
+        ScrollTrigger.update();
+      };
+      const scheduleRefresh = () => {
+        refreshScrollState();
+        firstFrame = window.requestAnimationFrame(() => {
+          refreshScrollState();
+          secondFrame = window.requestAnimationFrame(refreshScrollState);
+        });
+      };
+
+      scheduleRefresh();
+      delayedRefresh = window.setTimeout(refreshScrollState, 180);
+      window.addEventListener("pageshow", scheduleRefresh);
+      window.addEventListener("load", scheduleRefresh);
+
+      return () => {
+        window.cancelAnimationFrame(firstFrame);
+        window.cancelAnimationFrame(secondFrame);
+        window.clearTimeout(delayedRefresh);
+        window.removeEventListener("pageshow", scheduleRefresh);
+        window.removeEventListener("load", scheduleRefresh);
+      };
     },
-    { dependencies: [introReady, isDesktop, prefersReducedMotion], scope: sceneRef },
+    { dependencies: [introReady, isDesktop, prefersReducedMotion, skipIntro], scope: sceneRef },
   );
 
   return (
@@ -292,13 +420,14 @@ export default function ViewCanvas({ onContextLost, onReady }: ViewCanvasProps) 
               showPanels
             />
             <Suspense fallback={null}>
-              <SceneWordmark motion={flowerMotion} reducedMotion={prefersReducedMotion} />
+              <SceneWordmark motion={flowerMotion} reducedMotion={prefersReducedMotion} skipIntro={skipIntro} />
               <Model
                 scale={[0.68, 0.68, 0.68]}
                 material={material}
                 motion={flowerMotion}
                 reducedMotion={prefersReducedMotion}
                 introReady={introReady}
+                skipIntro={skipIntro}
                 onReady={onReady}
               />
             </Suspense>

@@ -8,8 +8,9 @@ import styles from "./hero-overlay.module.css";
 
 export default function Hero() {
   const prefersReducedMotion = useReducedMotion();
-  const { introReady } = usePortfolioIntro();
+  const { introReady, skipIntro } = usePortfolioIntro();
   const showIntro = prefersReducedMotion || introReady;
+  const animateIntro = !prefersReducedMotion && !skipIntro;
   const transition = { duration: 1.7, ease: [0.16, 1, 0.3, 1] as const };
   const hidden = { opacity: 0, y: 18 };
   const visible = { opacity: 1, y: 0 };
@@ -23,17 +24,17 @@ export default function Hero() {
         </h1>
         <motion.p
           className="eyebrow hero__eyebrow"
-          initial={prefersReducedMotion ? false : hidden}
+          initial={animateIntro ? hidden : false}
           animate={prefersReducedMotion ? undefined : showIntro ? visible : hidden}
-          transition={{ ...transition, delay: 0.72 }}
+          transition={animateIntro ? { ...transition, delay: 0.72 } : { duration: 0 }}
         >
           <span>VZ / 001</span> Atlanta, Georgia
         </motion.p>
         <motion.div
           className={`hero__bottom ${styles.bottom}`}
-          initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+          initial={animateIntro ? { opacity: 0, y: 24 } : false}
           animate={prefersReducedMotion ? undefined : showIntro ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-          transition={{ ...transition, delay: 1.04 }}
+          transition={animateIntro ? { ...transition, delay: 1.04 } : { duration: 0 }}
         >
           <p>{site.intro}</p>
           <div className="hero__actions">
@@ -49,9 +50,9 @@ export default function Hero() {
       <motion.p
         className={`hero__index ${styles.index}`}
         aria-hidden="true"
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+        initial={animateIntro ? { opacity: 0, y: 12 } : false}
         animate={prefersReducedMotion ? undefined : showIntro ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-        transition={{ ...transition, delay: 1.32 }}
+        transition={animateIntro ? { ...transition, delay: 1.32 } : { duration: 0 }}
       >
         INPUT / CURSOR + SCROLL
       </motion.p>
